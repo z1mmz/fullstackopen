@@ -1,16 +1,24 @@
 import { useState } from 'react'
 
-const Statistics = ({counts,avg,pctPos}) =>{
+const Statistics = ({counts,avg,pctPos,total}) =>{
   console.log(counts);
   const countsDisplay = Object.keys(counts).map((keys)=>{ return <p>{keys} {counts[keys]}</p>})
   console.log(countsDisplay)
-  return(
+  if(total>0){
+    return(
+      <div>
+        {countsDisplay}
+        <p>average {avg()}</p>
+        <p>positive {pctPos()*100}%</p>
+      </div>
+    )
+  }else{
+    return(
     <div>
-      {countsDisplay}
-      <p>average {avg()}</p>
-      <p>positive {pctPos()*100}%</p>
+      <p>No feedback given</p>
     </div>
-  )
+    )
+  }
 }
 
 const App = () => {
@@ -65,13 +73,7 @@ const App = () => {
       <button onClick={() => handleNeutral()}>neutral</button>
       <button onClick={() => handleBad()}>bad</button>
       <h1>Statistics</h1>
-      <Statistics counts={counts} avg={() => calculateAVG()} pctPos={() => calculatePos()} />
-      {/* <Statistics name={"good"} count={good}/>
-      <Statistics name={"neutral"} count={neutral}/>
-      <Statistics name={"bad"} count={bad}/>
-      <Statistics name={"total"} count={total}/>
-      <p>{average}</p>
-      <p>{calculateAVG()}</p> */}
+     <Statistics counts={counts} avg={() => calculateAVG()} pctPos={() => calculatePos()} total={total}/>
     </div>
   )
 }
