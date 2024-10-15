@@ -1,16 +1,24 @@
 import { useState } from 'react'
 
+const StatisticLine = (props) => {
+  return(
+  <tr>
+  <td>{props.name}</td> <td>{props.value}</td>
+  </tr>
+  )
+}
+
 const Statistics = ({counts,avg,pctPos,total}) =>{
-  console.log(counts);
-  const countsDisplay = Object.keys(counts).map((keys)=>{ return <p>{keys} {counts[keys]}</p>})
-  console.log(countsDisplay)
   if(total>0){
+    // console.log(counts);
+    const countsDisplay = Object.keys(counts).map((key)=> <StatisticLine key={key} name={key} value={counts[key]}/>)
+    console.log(countsDisplay)
     return(
-      <div>
+      <table>
         {countsDisplay}
-        <p>average {avg()}</p>
-        <p>positive {pctPos()*100}%</p>
-      </div>
+        <StatisticLine name={"average"} value={avg()}/>
+        <StatisticLine name={"positive"} value={pctPos()*100 + "%"}/>
+      </table>
     )
   }else{
     return(
@@ -19,6 +27,12 @@ const Statistics = ({counts,avg,pctPos,total}) =>{
     </div>
     )
   }
+}
+
+const Button = (props) => {
+  return(
+    <button onClick={props.onClick}>{props.text}</button>
+  )
 }
 
 const App = () => {
@@ -69,9 +83,9 @@ const App = () => {
   return (
     <div>
       <h1>Give feedback</h1>
-      <button onClick={() => handleGood()}>good</button>
-      <button onClick={() => handleNeutral()}>neutral</button>
-      <button onClick={() => handleBad()}>bad</button>
+      <Button onClick={() => handleGood()} text={"bad"}/>
+      <Button onClick={() => handleNeutral()} text={"neutral"}/>
+      <Button onClick={() => handleBad()} text={"bad"}/>
       <h1>Statistics</h1>
      <Statistics counts={counts} avg={() => calculateAVG()} pctPos={() => calculatePos()} total={total}/>
     </div>
