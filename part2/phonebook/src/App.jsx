@@ -4,12 +4,15 @@ import personService from './services/personService'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import PhoneList from './components/PhoneList'
+import Notification from './components/Notification'
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [searchName, setSearchNameName] = useState('')
   const [showAll, setShowAll] = useState(true)
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState(null)
 
   const handleNameChange = (event) =>{
     setNewName(event.target.value)
@@ -41,6 +44,10 @@ const App = () => {
         personService.update(person.id,changedPerson).then((resp) =>{
           console.log(resp)
           setPersons(persons.map(p => p.id === person.id ? resp : p))
+          setMessage(`Updated ${person.name}`)
+          setTimeout(()=>{
+            setMessage(null)
+          },5000)
         }).catch(error => {
           alert('Could not update entry')
         })
@@ -51,7 +58,10 @@ const App = () => {
       const newId = persons.reduce((id,persons) =>{return persons.id > id ? Number(persons.id) : Number(id) },0 ) +1
       personService.create({id:newId.toString(), name:newName,number:newPhone}).then(
         setPersons(persons.concat({id:newId,name:newName,number:newPhone})))
-
+        setMessage(`Added ${newName}`)
+        setTimeout(()=>{
+          setMessage(null)
+        },5000)
     }
     setNewName('')
     setNewPhone('')
@@ -61,6 +71,10 @@ const App = () => {
       console.log(`deleting ${personToDelete.id}`)
       personService.remove(personToDelete.id).then((returnedP) =>{
         setPersons(persons.filter(p => p.id != returnedP.id) )
+        setMessage(`Removed ${personToDelete.name}`)
+        setTimeout(()=>{
+          setMessage(null)
+        },5000)
       } ).catch(error => {
         alert('Could not delete entry')
       })
@@ -79,6 +93,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <div>
         <Filter handleSearchChange={handleSearchChange} searchName={searchName} />
       </div>
