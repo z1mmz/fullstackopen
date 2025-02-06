@@ -1,6 +1,6 @@
 import { useState,useEffect  } from 'react'
 import axios from 'axios'
-
+import personService from './services/personService'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import PhoneList from './components/PhoneList'
@@ -10,7 +10,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('')
   const [searchName, setSearchNameName] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const serverURL = "https://super-space-meme-qgvwq7xwrqc95gw-3001.app.github.dev"
+
   const handleNameChange = (event) =>{
     setNewName(event.target.value)
   }
@@ -35,23 +35,19 @@ const App = () => {
     if(persons.some((p) => p.name == newName & p.number == newPhone )){
       alert(`${newName} ${newPhone} is already added to the phone book`)
     }else{
-      axios
-        .post(`${serverURL}/persons`,{name:newName,number:newPhone}).then(response => {
-          console.log(response)
-        })
-      setPersons(persons.concat({name:newName,number:newPhone}))
-      console.log(persons)
+      const newId = persons.reduce((id,persons) =>{return persons.id > id ? Number(persons.id) : Number(id) },0 ) +1
+      personService.create({id:newId.toString(), name:newName,number:newPhone}).then(
+        setPersons(persons.concat({id:newId,name:newName,number:newPhone})))
+
     }
     setNewName('')
     setNewPhone('')
   }
   useEffect(() => {
     console.log('effect')
-    axios
-      .get(`${serverURL}/persons`)
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+    personService.getAll().then(data => {
+        console.log(data)
+        setPersons(data)
       })
   }, [])
 
