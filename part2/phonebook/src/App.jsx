@@ -10,7 +10,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('')
   const [searchName, setSearchNameName] = useState('')
   const [showAll, setShowAll] = useState(true)
-  
+  const serverURL = "https://super-space-meme-qgvwq7xwrqc95gw-3001.app.github.dev"
   const handleNameChange = (event) =>{
     setNewName(event.target.value)
   }
@@ -35,20 +35,25 @@ const App = () => {
     if(persons.some((p) => p.name == newName & p.number == newPhone )){
       alert(`${newName} ${newPhone} is already added to the phone book`)
     }else{
+      axios
+        .post(`${serverURL}/persons`,{name:newName,number:newPhone}).then(response => {
+          console.log(response)
+        })
       setPersons(persons.concat({name:newName,number:newPhone}))
       console.log(persons)
     }
+    setNewName('')
+    setNewPhone('')
   }
   useEffect(() => {
     console.log('effect')
     axios
-      .get('https://super-space-meme-qgvwq7xwrqc95gw-3001.app.github.dev/persons')
+      .get(`${serverURL}/persons`)
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
       })
   }, [])
-  console.log('render', persons.length, 'notes')
 
   return (
     <div>
