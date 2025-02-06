@@ -34,7 +34,20 @@ const App = () => {
 
     if(persons.some((p) => p.name == newName & p.number == newPhone )){
       alert(`${newName} ${newPhone} is already added to the phone book`)
-    }else{
+    }else if(persons.some((p) => p.name == newName & p.number != newPhone )){
+      if(confirm(`${newName} is already added to the phone book, replace the old number with a new one?`)){
+        const person = persons.find(p => p.name === newName)
+        const changedPerson = { ...person, number: newPhone }
+        personService.update(person.id,changedPerson).then((resp) =>{
+          console.log(resp)
+          setPersons(persons.map(p => p.id === person.id ? resp : p))
+        }).catch(error => {
+          alert('Could not update entry')
+        })
+
+      }
+    }
+    else{
       const newId = persons.reduce((id,persons) =>{return persons.id > id ? Number(persons.id) : Number(id) },0 ) +1
       personService.create({id:newId.toString(), name:newName,number:newPhone}).then(
         setPersons(persons.concat({id:newId,name:newName,number:newPhone})))
