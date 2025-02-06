@@ -43,6 +43,18 @@ const App = () => {
     setNewName('')
     setNewPhone('')
   }
+  const handleDelete = (personToDelete) =>{
+    if(confirm(`Delete ${personToDelete.name} : ${personToDelete.number}?`)){
+      console.log(`deleting ${personToDelete.id}`)
+      personService.remove(personToDelete.id).then((returnedP) =>{
+        setPersons(persons.filter(p => p.id != returnedP.id) )
+      } ).catch(error => {
+        alert('Could not delete entry')
+      })
+    }
+  }
+
+
   useEffect(() => {
     console.log('effect')
     personService.getAll().then(data => {
@@ -64,7 +76,7 @@ const App = () => {
                   newName={newName}
                   newPhone={newPhone}/>
       <h2>Numbers</h2>
-      <PhoneList personsToShow={personsToShow}/>
+      <PhoneList personsToShow={personsToShow} handleDelete={handleDelete} />
     </div>
   )
 }
