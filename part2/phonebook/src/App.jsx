@@ -49,7 +49,15 @@ const App = () => {
             setMessage(null)
           },5000)
         }).catch(error => {
-          alert('Could not update entry')
+          if(error.status === 404){
+            setMessageType('error')
+            setMessage(`${person.name} has been already deleted from server`)
+            setTimeout(()=>{
+              setMessage(null)
+              setMessageType(null)
+            },5000)
+
+          }
         })
 
       }
@@ -76,6 +84,7 @@ const App = () => {
           setMessage(null)
         },5000)
       } ).catch(error => {
+        console.log(error)
         alert('Could not delete entry')
       })
     }
