@@ -3,6 +3,7 @@ import countriesService from "./services/countriesService"
 import Filter from './components/Filter'
 import CountryList from './components/CountryList'
 import CountryDetail from './components/CountryDetail'
+import weatherService from './services/weatherService'
 
 const App = () => {
   const [countries, setCountries] = useState([])
