@@ -1,4 +1,4 @@
-const CountryList = ({countries}) =>{
+const CountryList = ({countries,handleCountrySelect}) =>{
     if(countries.length> 10){
         return(
             <div>
@@ -7,7 +7,7 @@ const CountryList = ({countries}) =>{
         )
     }else{
         return(
-            countries.map(c => <li key={c.name.official}>{c.name.common}</li>)
+            countries.map(c => <li key={c.name.official}>{c.name.common} <button type="button" onClick={() => handleCountrySelect(c)}>Detail</button></li>)
         )
     }
 

@@ -9,14 +9,21 @@ const App = () => {
   const [country, setcountry] = useState(null)
   const [searchName,setSearchName] = useState("")
   const [showAll,setShowAll] = useState(true)
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   const handleSearchNameChange = (event) =>{
     setSearchName(event.target.value)
-    if(event.target.value === ""){
-      setShowAll(true)
+    
+    const filteredCountries = countries.filter(countries => countries.name.common.toLowerCase().match(`${searchName.toLowerCase()}`) )
+    if(filteredCountries.length == 1 ){
+      setSelectedCountry(filteredCountries[0])
     }else{
-      setShowAll(false)
+      setSelectedCountry(null)
     }
+  }
+  const handleCountrySelect = (c) =>{
+    setSelectedCountry(c)
+    console.log(c)
   }
   useEffect(() => {
     countriesService.getAll().then((data) =>{
@@ -34,7 +41,7 @@ const App = () => {
   return (
    <div>
       <Filter handleSearchNameChange={handleSearchNameChange} searchName={searchName}></Filter>
-      {countriesToDisplay.length === 1 ? <CountryDetail country={countriesToDisplay[0]}/>:<CountryList countries={countriesToDisplay}/>}
+      {selectedCountry ? <CountryDetail country={selectedCountry}/>:<CountryList handleCountrySelect={handleCountrySelect} countries={countriesToDisplay}/>}
    </div>
   )
 }
