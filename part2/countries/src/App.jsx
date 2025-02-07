@@ -15,13 +15,13 @@ const App = () => {
     setSearchName(event.target.value)
     if (event.target.value != ""){
       setShowAll(false)
-    const filteredCountries = countries.filter(countries => countries.name.common.toLowerCase().match(`${searchName.toLowerCase()}`) )
-  
-    if(filteredCountries.length == 1 ){
-      setSelectedCountry(filteredCountries[0])
-    }else{
-      setSelectedCountry(null)
-    }
+      const filteredCountries = countries.filter(countries => countries.name.common.toLowerCase().match(`${event.target.value .toLowerCase()}`) )
+    
+      if(filteredCountries.length == 1 ){
+        setSelectedCountry(filteredCountries[0])
+      }else{
+        setSelectedCountry(null)
+      }
   }else{
     setShowAll(True)
   }
