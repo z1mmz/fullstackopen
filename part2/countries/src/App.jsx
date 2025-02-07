@@ -7,20 +7,24 @@ import weatherService from './services/weatherService'
 
 const App = () => {
   const [countries, setCountries] = useState([])
-  const [country, setcountry] = useState(null)
   const [searchName,setSearchName] = useState("")
   const [showAll,setShowAll] = useState(true)
   const [selectedCountry, setSelectedCountry] = useState(null)
 
   const handleSearchNameChange = (event) =>{
     setSearchName(event.target.value)
-    
+    if (event.target.value != ""){
+      setShowAll(false)
     const filteredCountries = countries.filter(countries => countries.name.common.toLowerCase().match(`${searchName.toLowerCase()}`) )
+  
     if(filteredCountries.length == 1 ){
       setSelectedCountry(filteredCountries[0])
     }else{
       setSelectedCountry(null)
     }
+  }else{
+    setShowAll(True)
+  }
   }
   const handleCountrySelect = (c) =>{
     setSelectedCountry(c)
