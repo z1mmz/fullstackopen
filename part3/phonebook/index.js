@@ -26,10 +26,7 @@ let phonebook = [
 ]
 
 const generateId = () => {
-  const maxId = phonebook.length > 0
-    ? Math.max(...phonebook.map(n=> Number(n.id)))
-    : 0
-  return String(maxId+1)
+  return String(Math.floor(Math.random() * 99999999999999999))
 }
 
 app.get('/info', (request, response) => {
@@ -57,6 +54,12 @@ app.get('/info', (request, response) => {
     if (!body.number) {
       return response.status(400).json({ 
         error: 'number missing' 
+      })
+    }
+
+    if(phonebook.find(person => person.name === body.name)){
+      return response.status(400).json({ 
+        error: `${body.name} is already in phonebook. Name must be unique`
       })
     }
 
