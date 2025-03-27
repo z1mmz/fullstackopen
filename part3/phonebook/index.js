@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let phonebook = [
     { 
@@ -24,6 +25,13 @@ let phonebook = [
     }
 ]
 
+const generateId = () => {
+  const maxId = phonebook.length > 0
+    ? Math.max(...phonebook.map(n=> Number(n.id)))
+    : 0
+  return String(maxId+1)
+}
+
 app.get('/info', (request, response) => {
 
     const num_people = phonebook.length
@@ -36,6 +44,49 @@ app.get('/info', (request, response) => {
   app.get('/api/persons', (request, response) => {
     response.json(phonebook)
   })
+
+  app.post('/api/persons', (request, response) => {
+
+    const body = request.body
+    console.log(body)
+    if (!body.name) {
+      return response.status(400).json({ 
+        error: 'Name missing' 
+      })
+    }
+    if (!body.number) {
+      return response.status(400).json({ 
+        error: 'number missing' 
+      })
+    }
+
+    const person = {
+      id:generateId(),
+      name: body.name,
+      number:body.number
+    }
+    phonebook = phonebook.concat(person)
+    response.json(phonebook)
+  })
+
+  app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const person = phonebook.find(person => person.id === id)
+    if(person){
+      response.json(person)
+    }
+    else{
+     
+      response.status(404).send(`<p>Sorry we didnt find a person with the id ${id}</p>`)
+    }
+  })
+
+  app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    phonebook = phonebook.filter(person => person.id != id)
+    response.status(204).end()
+  })
+  
   
   const PORT = 3001
   app.listen(PORT, () => {
