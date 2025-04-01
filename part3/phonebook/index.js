@@ -7,7 +7,7 @@ morgan.token("body",function (req, res){return JSON.stringify(req.body)})
 
 app.use(morgan("tiny :body"))
 app.use(cors())
-
+app.use(express.static('dist'))
 app.use(express.json())
 let phonebook = [
     { 
