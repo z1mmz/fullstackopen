@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'https://super-space-meme-qgvwq7xwrqc95gw-3001.app.github.dev/persons'
+const baseUrl = 'http://localhost:3001/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseUrl)
