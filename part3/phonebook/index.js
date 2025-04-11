@@ -1,3 +1,7 @@
+require('dotenv').config()
+
+const Person = require('./models/person')
+
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
@@ -6,6 +10,7 @@ morgan.token("body",function (req, res){return JSON.stringify(req.body)})
 app.use(morgan("tiny", ":body"))
 app.use(express.static('dist'))
 app.use(express.json())
+
 let phonebook = [
     { 
       "id": "1",
@@ -34,16 +39,23 @@ const generateId = () => {
 }
 
 app.get('/info', (request, response) => {
-
-    const num_people = phonebook.length
-    var today = new Date();
-    response.send(
-      `<p>Phonebook has info for ${num_people} people</p>
-      <p>${today}</p>`)
+    Person.find({}).then(persons => {
+      var today = new Date();
+      response.send(
+        `<p>Phonebook has info for ${persons.length} people</p>
+        <p>${today}</p>`)
+    }).catch(error =>{
+      response.status(400).send(`<p>Error: ${error}</p>`)
+    })
+    
+ 
   })
   
   app.get('/api/persons', (request, response) => {
-    response.json(phonebook)
+    Person.find({}).then(persons => {
+      response.json(persons)
+      
+    })
   })
 
   app.post('/api/persons', (request, response) => {
@@ -61,31 +73,39 @@ app.get('/info', (request, response) => {
       })
     }
 
-    if(phonebook.find(person => person.name === body.name)){
-      return response.status(400).json({ 
-        error: `${body.name} is already in phonebook. Name must be unique`
-      })
-    }
+    // Person.find({name:body.name}).then(
+    //   person =>{
+    //     if(person.length > 0){
+    //       return response.status(400).json({ 
+    //         error: `${body.name} is already in phonebook. Name must be unique`
+    //       })
+    //     }
+    //   }
+    // ).catch(
+    //   error =>{
+    //     console.log(error)
+    //   }
+    // )
 
-    const person = {
-      id:generateId(),
+    const person = new Person({
       name: body.name,
       number:body.number
-    }
-    phonebook = phonebook.concat(person)
-    response.json(phonebook)
+    })
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
   app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const person = phonebook.find(person => person.id === id)
-    if(person){
-      response.json(person)
-    }
-    else{
-     
+    const person = Person.findById(id).then(
+      person =>{
+        response.json(person)
+      }
+    ).catch( error => {
       response.status(404).send(`<p>Sorry we didnt find a person with the id ${id}</p>`)
     }
+    )
   })
 
   app.delete('/api/persons/:id', (request, response) => {
