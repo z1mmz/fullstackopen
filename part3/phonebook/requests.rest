@@ -1,5 +1,7 @@
-DELETE http://localhost:3001/api/persons/2
+DELETE http://localhost:3001/api/persons/67f8a4e9e912e8c2b14c5a3f
 
+###
+get http://localhost:3001/api/persons/zfv
 ###
 POST http://localhost:3001/api/persons
 Content-Type: application/json

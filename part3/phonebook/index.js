@@ -11,42 +11,18 @@ app.use(morgan("tiny", ":body"))
 app.use(express.static('dist'))
 app.use(express.json())
 
-let phonebook = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
 
 const generateId = () => {
   return String(Math.floor(Math.random() * 99999999999999999))
 }
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
     Person.find({}).then(persons => {
       var today = new Date();
       response.send(
         `<p>Phonebook has info for ${persons.length} people</p>
         <p>${today}</p>`)
-    }).catch(error =>{
-      response.status(400).send(`<p>Error: ${error}</p>`)
-    })
+    }).catch(error => next(error))
     
  
   })
@@ -73,20 +49,6 @@ app.get('/info', (request, response) => {
       })
     }
 
-    // Person.find({name:body.name}).then(
-    //   person =>{
-    //     if(person.length > 0){
-    //       return response.status(400).json({ 
-    //         error: `${body.name} is already in phonebook. Name must be unique`
-    //       })
-    //     }
-    //   }
-    // ).catch(
-    //   error =>{
-    //     console.log(error)
-    //   }
-    // )
-
     const person = new Person({
       name: body.name,
       number:body.number
@@ -96,24 +58,43 @@ app.get('/info', (request, response) => {
     })
   })
 
-  app.get('/api/persons/:id', (request, response) => {
+  app.get('/api/persons/:id', (request, response,next) => {
     const id = request.params.id
     const person = Person.findById(id).then(
       person =>{
+        if(person){
         response.json(person)
+        }else{
+          response.status(404).send(`<p>Sorry we didnt find a person with the id ${id}</p>`)
+        }
       }
-    ).catch( error => {
-      response.status(404).send(`<p>Sorry we didnt find a person with the id ${id}</p>`)
-    }
-    )
+    ).catch( error => next(error))
   })
 
-  app.delete('/api/persons/:id', (request, response) => {
+  app.delete('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
-    phonebook = phonebook.filter(person => person.id != id)
-    response.status(204).end()
+    console.log(id)
+    Person.findByIdAndDelete(id).then(
+      deletedPerson =>{
+        response.status(204).end()
+      }
+    ).catch( error => next(error)
+    )
+    
   })
   
+
+  const errorHandler = (error, request, response, next) => {
+    console.error(error.name,error.message )
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+  
+    next(error)
+  }
+  
+  app.use(errorHandler)
   
   const PORT = process.env.PORT || 3001
   app.listen(PORT, () => {
