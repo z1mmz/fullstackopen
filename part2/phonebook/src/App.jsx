@@ -68,12 +68,13 @@ const App = () => {
     }
     else{
       const newId = persons.reduce((id,persons) =>{return persons.id > id ? Number(persons.id) : Number(id) },0 ) +1
-      personService.create({id:newId.toString(), name:newName,number:newPhone}).then(
-        setPersons(persons.concat({id:newId,name:newName,number:newPhone})))
-        setMessage(`Added ${newName}`)
-        setTimeout(()=>{
-          setMessage(null)
-        },5000)
+      personService.create({name:newName,number:newPhone}).then(() =>{
+      setMessage(`Added ${newName}`)
+      setTimeout(()=>{
+        setMessage(null)
+      },5000)
+      refreshPhoneBook()
+    })
     }
     setNewName('')
     setNewPhone('')
