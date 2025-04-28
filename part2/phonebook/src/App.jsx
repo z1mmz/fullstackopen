@@ -34,13 +34,15 @@ const App = () => {
 
   const handleSubmit = (event) =>{
     event.preventDefault()
-
+    // Check if user is already in phonebook, prompt user if they want to update if details are not the same
     if(persons.some((p) => p.name == newName & p.number == newPhone )){
       alert(`${newName} ${newPhone} is already added to the phone book`)
     }else if(persons.some((p) => p.name == newName & p.number != newPhone )){
       if(confirm(`${newName} is already added to the phone book, replace the old number with a new one?`)){
+        // Create updated person record
         const person = persons.find(p => p.name === newName)
         const changedPerson = { ...person, number: newPhone }
+        // Save changes to database
         personService.update(person.id,changedPerson).then((resp) =>{
           console.log(resp)
           setPersons(persons.map(p => p.id === person.id ? resp : p))
@@ -48,7 +50,9 @@ const App = () => {
           setTimeout(()=>{
             setMessage(null)
           },5000)
-        }).catch(error => {
+        }).then(
+          refreshPhoneBook()
+        ).catch(error => {
           if(error.status === 404){
             setMessageType('error')
             setMessage(`${person.name} has been already deleted from server`)
@@ -74,6 +78,7 @@ const App = () => {
     setNewName('')
     setNewPhone('')
   }
+
   const handleDelete = (personToDelete) =>{
     if(confirm(`Delete ${personToDelete.name} : ${personToDelete.number}?`)){
       console.log(`deleting ${personToDelete.id}`)
@@ -83,6 +88,7 @@ const App = () => {
         setTimeout(()=>{
           setMessage(null)
         },5000)
+        refreshPhoneBook()
       } ).catch(error => {
         console.log(error)
         alert('Could not delete entry')
@@ -90,13 +96,15 @@ const App = () => {
     }
   }
 
-
+  const refreshPhoneBook = () =>{
+    personService.getAll().then(data => {
+      console.log(data)
+      setPersons(data)
+    })
+  }
   useEffect(() => {
     console.log('effect')
-    personService.getAll().then(data => {
-        console.log(data)
-        setPersons(data)
-      })
+    refreshPhoneBook()
   }, [])
 
   return (
