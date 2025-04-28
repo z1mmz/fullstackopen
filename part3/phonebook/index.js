@@ -6,7 +6,9 @@ const express = require('express')
 const app = express()
 var morgan = require('morgan')
 morgan.token("body",function (req, res){return JSON.stringify(req.body)})
+const cors = require('cors')
 
+app.use(cors())
 app.use(morgan("tiny", ":body"))
 app.use(express.static('dist'))
 app.use(express.json())
@@ -56,6 +58,22 @@ app.get('/info', (request, response, next) => {
     person.save().then(savedPerson => {
       response.json(savedPerson)
     })
+  })
+
+  app.put('/api/persons/:id', (request, response,next) => {
+    const id = request.params.id
+    const body = request.body
+
+    Person.findById(id).then(person => {
+      if(!person){
+        return response.status(404).end()
+      }
+      person.number = body.number
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
   })
 
   app.get('/api/persons/:id', (request, response,next) => {
