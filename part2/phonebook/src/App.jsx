@@ -14,6 +14,14 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
 
+  const statusMessage = (message,type) =>{
+    setMessageType(type)
+    setMessage(message)
+    setTimeout(()=>{
+      setMessageType(null)
+      setMessage(null)
+    },5000)
+  }
   const handleNameChange = (event) =>{
     setNewName(event.target.value)
   }
@@ -46,21 +54,12 @@ const App = () => {
         personService.update(person.id,changedPerson).then((resp) =>{
           console.log(resp)
           setPersons(persons.map(p => p.id === person.id ? resp : p))
-          setMessage(`Updated ${person.name}`)
-          setTimeout(()=>{
-            setMessage(null)
-          },5000)
+          statusMessage(`Updated ${person.name}`,'notice')
         }).then(
           refreshPhoneBook()
         ).catch(error => {
           if(error.status === 404){
-            setMessageType('error')
-            setMessage(`${person.name} has been already deleted from server`)
-            setTimeout(()=>{
-              setMessage(null)
-              setMessageType(null)
-            },5000)
-
+            statusMessage(`${person.name} has been already deleted from server`,'error')
           }
         })
 
@@ -69,11 +68,11 @@ const App = () => {
     else{
       const newId = persons.reduce((id,persons) =>{return persons.id > id ? Number(persons.id) : Number(id) },0 ) +1
       personService.create({name:newName,number:newPhone}).then(() =>{
-      setMessage(`Added ${newName}`)
-      setTimeout(()=>{
-        setMessage(null)
-      },5000)
+      statusMessage(`Added ${newName}`,'notice')
       refreshPhoneBook()
+    }).catch(error => {
+      console.log(error)
+      statusMessage(error.response.data.error,'error')
     })
     }
     setNewName('')
@@ -85,14 +84,11 @@ const App = () => {
       console.log(`deleting ${personToDelete.id}`)
       personService.remove(personToDelete.id).then((returnedP) =>{
         setPersons(persons.filter(p => p.id != returnedP.id) )
-        setMessage(`Removed ${personToDelete.name}`)
-        setTimeout(()=>{
-          setMessage(null)
-        },5000)
+        statusMessage(`Removed ${personToDelete.name}`,'notice')
         refreshPhoneBook()
       } ).catch(error => {
         console.log(error)
-        alert('Could not delete entry')
+        statusMessage('Could not delete entry','error')
       })
     }
   }
