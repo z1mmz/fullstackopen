@@ -19,8 +19,25 @@ const favoriteBlog = (blogs) => {
     })
 
 }
+
+const mostBlogs = (blogs) => {
+    const authorMap = new Map();
+
+    blogs.forEach(blog => {
+        if(authorMap.has(blog.author)){
+            authorMap.set(blog.author,authorMap.get(blog.author) + 1)
+        }else{
+            authorMap.set(blog.author,1)
+        }
+    });
+    const [author, count] = [...authorMap.entries()].reduce((previous,current) =>{
+        return (previous[1] > current[1]) ? previous : current
+    })
+    return {author:author,blogs:count}
+}
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
