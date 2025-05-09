@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'https://verbose-space-lamp-49qx7jrxq7cqrvj-3001.app.github.dev/api/persons'
+const baseUrl = '/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseUrl)
