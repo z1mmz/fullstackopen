@@ -3,9 +3,12 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "My first blog",
+    "title": "My first bloga",
     "author": "zim",
     "url":"no you are L",
     "likes": 1
 
 }
+
+###
+GET http://localhost:3003/api/blogs
