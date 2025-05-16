@@ -55,6 +55,22 @@ describe("blog posting test", () => {
         assert.strictEqual(response.body.likes,0)
  
     })
+    test('400 if missing title' , async () =>{
+        const blog_payload = {
+            author: 'adder',
+            url: 'www.testplus1.com',
+          }
+        const response = await api.post('/api/blogs').send(blog_payload)
+        assert.strictEqual(response.status,400)
+    })
+    test('400 if missing url' , async () =>{
+        const blog_payload = {
+            title: 'add one',
+            author: 'adder',
+          }
+        const response = await api.post('/api/blogs').send(blog_payload)
+        assert.strictEqual(response.status,400)
+    })
 
 
 })
