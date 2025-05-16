@@ -30,7 +30,7 @@ test('all blogs are returned', async () => {
   })
 })
 
-describe("blog posting test", () => {
+describe("blog posting and removal tests", () => {
     test('test blog is created', async () =>{
         const blogsBefore = await api.get('/api/blogs')
 
@@ -71,8 +71,18 @@ describe("blog posting test", () => {
         const response = await api.post('/api/blogs').send(blog_payload)
         assert.strictEqual(response.status,400)
     })
-
-
+    test('Blog is deleted' , async () =>{
+        const blogsBefore = await api.get('/api/blogs')
+        const to_delete_id = blogsBefore.body[0].id
+        const response = await api.delete(`/api/blogs/${to_delete_id}`)
+        assert.strictEqual(response.status,204)
+        const blogsAfter = await api.get('/api/blogs')
+        assert.strictEqual(blogsAfter.body.length,blogsBefore.body.length -1)
+        blogsAfter.body.forEach(blog => {
+            assert.notStrictEqual(blog.id,to_delete_id);
+          });
+    })
+    
 })
 
 describe("blog field test", () => {
