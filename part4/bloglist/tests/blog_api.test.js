@@ -45,6 +45,16 @@ describe("blog posting test", () => {
         const blogsAfter = await api.get('/api/blogs')
         assert.strictEqual(blogsBefore.body.length+1,blogsAfter.body.length)
     })
+    test('Likes default to 0', async () =>{
+        const blog_payload = {
+            title: 'add one',
+            author: 'adder',
+            url: 'www.testplus1.com',
+          }
+        const response = await api.post('/api/blogs').send(blog_payload)
+        assert.strictEqual(response.body.likes,0)
+ 
+    })
 
 
 })
