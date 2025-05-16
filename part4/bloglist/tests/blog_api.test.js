@@ -1,5 +1,5 @@
 const assert = require('node:assert')
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach,describe} = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -16,7 +16,7 @@ beforeEach(async () => {
     await Promise.all(promiseArray)
 })
 
-
+describe("blog fetching", ()=>{
 test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
@@ -28,6 +28,16 @@ test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, 2)
   })
+})
+
+describe("blog field test", () => {
+   test('id is defined', async () => {
+    const response = await api.get('/api/blogs')
+    response.body.forEach(blog => {
+        assert(blog.id);
+      });
+  })
+})
 
 after(async () => {
   await mongoose.connection.close()
