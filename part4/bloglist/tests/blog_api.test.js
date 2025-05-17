@@ -77,10 +77,18 @@ describe("blog posting and removal tests", () => {
         const response = await api.delete(`/api/blogs/${to_delete_id}`)
         assert.strictEqual(response.status,204)
         const blogsAfter = await api.get('/api/blogs')
-        assert.strictEqual(blogsAfter.body.length,blogsBefore.body.length -1)
+        assert.strictEqual(blogsAfter.body.length,blogsBefore.body.length - 1)
         blogsAfter.body.forEach(blog => {
             assert.notStrictEqual(blog.id,to_delete_id);
           });
+    })
+    test('Blog is updated', async () => {
+        const blogsBefore = await api.get('/api/blogs')
+        const original_blog = blogsBefore.body[0]
+        const put_result = await api.put(`/api/blogs/${original_blog.id}`).send({author:"changed"})
+        const result = await api.get(`/api/blogs/${original_blog.id}`)
+        assert.strictEqual(result.body.author,"changed",)
+
     })
     
 })
