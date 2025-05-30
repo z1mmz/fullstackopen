@@ -40,6 +40,56 @@ describe('when there is initially one user in db', () => {
         assert(usernames.includes(newUser.username))
     })
 })
+describe('password tests', () => {
+    beforeEach(async () => {
+        await User.deleteMany({})
+    })
+    
+    test('password less than 3 characters long not accepted', async () =>{
+        const newUser = {
+            username:'only2chars',
+            name:'shortpasswordson',
+            password:'xx'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        const result = await User.find({username:"only2chars"}).exec();
+        assert.strictEqual(result.length,0)
+    })
+
+    test('password  3 characters long accepted', async () =>{
+        const newUser = {
+            username:'3chars',
+            name:'perfect',
+            password:'xyz'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(201)
+        const result = await User.find({username:"3chars"}).exec();
+        assert.strictEqual(result.length,1)
+    })
+
+    test('password more than 3 characters long accepted', async () =>{
+        const newUser = {
+            username:'wow',
+            name:'longpassi',
+            password:'abdcefghiasl;dkfjlk;asdfjlk;asdjlk;asdfljkafsdjlk;asfdkjblbkjdvbdkljhdsflghljsdfgh'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(201)
+        const result = await User.find({username:"wow"}).exec();
+        assert.strictEqual(result.length,1)
+    })
+})
+
 after(async () => {
     await mongoose.connection.close()
-  })
+})
