@@ -3,7 +3,7 @@ const blogsRouter = require('express').Router()
 const { default: mongoose } = require('mongoose')
 const Blog = require('../models/blog')
 const User = require('../models/user')
-
+const bcrypt = require('bcrypt')
 
 const getTokenFrom = request => {
   const authorization = request.get('authorization')
@@ -24,8 +24,8 @@ blogsRouter.get('/:id', async(request, response) => {
 })
 
 blogsRouter.post('/', async(request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
   }
@@ -35,9 +35,8 @@ blogsRouter.post('/', async(request, response) => {
   }
 
   const blog = new Blog(request.body)
-
+  blog.user = user.id
   const result = await blog.save()
-  console.log(result)
   user.blogs = user.blogs.concat(result._id)
   await user.save()
 
@@ -56,7 +55,20 @@ blogsRouter.put('/:id', async(request, response) => {
 
 blogsRouter.delete('/:id', async(request, response) => {
   const id = request.params.id
-  await Blog.findByIdAndDelete(id)
-  response.status(204).end()
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  const blog = await Blog.findById(id).populate('user')
+  const user = await User.findById(decodedToken.id)
+  if (!user) {
+    return response.status(400).json({ error: 'UserId missing or not valid' })
+  }
+  if ( blog.user.id === user.id ){
+    await Blog.findByIdAndDelete(id);
+    response.status(204).end()
+  }else{
+    response.status(401).json({
+      error:"unauthorized"
+    })
+  }
+
 })
 module.exports = blogsRouter
