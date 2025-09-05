@@ -4,6 +4,7 @@ import login from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -61,15 +62,10 @@ const App = () => {
     setUser(null)
   }
 const handleBlogSubmit = async (e) => {
-
-    console.log('tring to add')
     blogService.createBlog(e)
       .then(() => statusMessage(`A new blog ${e.title} by ${e.author} added`, 'success'))
       .then(() => getAllBlogs())
       .catch(error => statusMessage(`Error: ${error}`, 'error'))
-    
-    console.log('this is fine')
-
 
   }
 
@@ -95,7 +91,7 @@ const handleBlogSubmit = async (e) => {
       {message? <Notification message={message} type={messageType} /> : null}
       <h2>blogs</h2>
       {user ? <div><b>Logged in user: {user.username}</b> <button onClick={() => handleLogout()}>logout</button></div>: loginForm}
-      {user ? <BlogForm handleBlogSubmit={handleBlogSubmit}/> : null}
+      {user ? <Togglable buttonLabel="Create Blog"><BlogForm handleBlogSubmit={handleBlogSubmit}/></Togglable> : null}
       {user ? blogList :null }
     </div>
   )

@@ -4,6 +4,7 @@ const BlogForm = ({handleBlogSubmit}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [visible, setVisbile] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault()
     handleBlogSubmit({ title:title, author:author, url:url })
@@ -11,6 +12,7 @@ const BlogForm = ({handleBlogSubmit}) => {
     setAuthor('')
     setUrl('')  
   }
+
   
   return (
     <div>
