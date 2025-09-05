@@ -68,6 +68,15 @@ const handleBlogSubmit = async (e) => {
       .catch(error => statusMessage(`Error: ${error}`, 'error'))
 
   }
+const handleBlogDelete = async (blog) => {
+  if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)){
+    blogService.removeBlog(blog.id)
+      .then(() => statusMessage(`Blog ${blog.title} by ${blog.author} deleted`, 'success'))
+      .then(() => { getAllBlogs()})
+      .catch(error => statusMessage(`Error: ${error}`, 'error'))
+  }
+}
+    //console.log('delete', blog)
 
   const loginForm = (
     <form onSubmit={handleLogin}>
@@ -82,7 +91,7 @@ const handleBlogSubmit = async (e) => {
   );
 
   const blogList = (<div> {blogs.map(blog =>
-    <Blog key={blog.id} blog={blog} />
+    <Blog key={blog.id} user={user} blog={blog} handleBlogDelete={handleBlogDelete}/>
   )}</div>)
 
   
