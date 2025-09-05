@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import blogs from '../services/blogs'
-const BlogForm = ({handleBlogSubmit}) => {
+const BlogForm = ({ handleBlogSubmit }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -10,20 +10,20 @@ const BlogForm = ({handleBlogSubmit}) => {
     handleBlogSubmit({ title:title, author:author, url:url })
     setTitle('')
     setAuthor('')
-    setUrl('')  
+    setUrl('')
   }
 
-  
+
   return (
     <div>
       <h1>Create new</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Title:</label> 
+          <label>Title:</label>
           <input type='text' value={title} onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
-          <label>Author:</label> 
+          <label>Author:</label>
           <input type='text' value={author} onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>

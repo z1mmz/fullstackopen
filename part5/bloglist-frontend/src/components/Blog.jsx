@@ -1,5 +1,5 @@
-import { useState } from "react"
-import blogs from "../services/blogs"
+import { useState } from 'react'
+import blogs from '../services/blogs'
 
 const Blog = ({ blog,user,handleBlogDelete }) => {
   console.log(user)
@@ -11,7 +11,7 @@ const Blog = ({ blog,user,handleBlogDelete }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  
+
   const [detailsVisible, setDetailsVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -26,18 +26,18 @@ const Blog = ({ blog,user,handleBlogDelete }) => {
     })
   }
 
-  
+
   const showWhenVisible = { display: detailsVisible ? '' : 'none' }
   return (
-  <div style={blogStyle}>
-    <div>{blog.title} {blog.author} <button onClick={() => (toggleVisibility())}>{!detailsVisible? "view":"close"}</button></div> 
-    <div style={showWhenVisible}>
-      <div>{blog.url}</div>
-      <div>likes {blog.likes} <button onClick={() => (handleLike())}>like</button></div>
-      <div>{blog.user.name}</div>
-      {user.id==blog.user.id?<button onClick={() => (handleBlogDelete(blog))}>remove</button>:""}
+    <div style={blogStyle}>
+      <div>{blog.title} {blog.author} <button onClick={() => (toggleVisibility())}>{!detailsVisible? 'view':'close'}</button></div>
+      <div style={showWhenVisible}>
+        <div>{blog.url}</div>
+        <div>likes {blog.likes} <button onClick={() => (handleLike())}>like</button></div>
+        <div>{blog.user.name}</div>
+        {user.id==blog.user.id?<button onClick={() => (handleBlogDelete(blog))}>remove</button>:''}
+      </div>
     </div>
-  </div>  
-)
+  )
 }
 export default Blog

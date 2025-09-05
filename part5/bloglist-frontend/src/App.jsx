@@ -17,7 +17,7 @@ const App = () => {
   const getAllBlogs = async () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort((a,b) => (b.likes - a.likes)) )
-    )  
+    )
   }
 
   useEffect(() => {
@@ -34,19 +34,19 @@ const App = () => {
     }
   }, [])
 
-  const statusMessage = (message,type) =>{
+  const statusMessage = (message,type) => {
     setMessageType(type)
     setMessage(message)
-    setTimeout(()=>{
+    setTimeout(() => {
       setMessageType(null)
       setMessage(null)
     },5000)
   }
 
-  const handleLogin = async (e) =>{
+  const handleLogin = async (e) => {
     e.preventDefault()
     try{
-      const user = await login.login({username,password})
+      const user = await login.login({ username,password })
       window.localStorage.setItem('blogsLoggedInUser',JSON.stringify(user))
       setUser(user)
       setUsername('')
@@ -57,44 +57,44 @@ const App = () => {
       console.error(exception)
     }
   }
-  const handleLogout = async () =>{
+  const handleLogout = async () => {
     window.localStorage.removeItem('blogsLoggedInUser')
     setUser(null)
   }
-const handleBlogSubmit = async (e) => {
+  const handleBlogSubmit = async (e) => {
     blogService.createBlog(e)
       .then(() => statusMessage(`A new blog ${e.title} by ${e.author} added`, 'success'))
       .then(() => getAllBlogs())
       .catch(error => statusMessage(`Error: ${error}`, 'error'))
 
   }
-const handleBlogDelete = async (blog) => {
-  if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)){
-    blogService.removeBlog(blog.id)
-      .then(() => statusMessage(`Blog ${blog.title} by ${blog.author} deleted`, 'success'))
-      .then(() => { getAllBlogs()})
-      .catch(error => statusMessage(`Error: ${error}`, 'error'))
+  const handleBlogDelete = async (blog) => {
+    if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)){
+      blogService.removeBlog(blog.id)
+        .then(() => statusMessage(`Blog ${blog.title} by ${blog.author} deleted`, 'success'))
+        .then(() => { getAllBlogs()})
+        .catch(error => statusMessage(`Error: ${error}`, 'error'))
+    }
   }
-}
-    //console.log('delete', blog)
+  //console.log('delete', blog)
 
   const loginForm = (
     <form onSubmit={handleLogin}>
-    <div>
-      Username <input type='text' value={username} name='Username' onChange={({target}) => setUsername(target.value)}></input>
-    </div>
-    <div>
-    Password <input type='text' value={password} name='Password' onChange={({target}) => setPassword(target.value)}></input>
-    </div>
-    <button type='submit'>Login</button>
-  </form>
-  );
+      <div>
+      Username <input type='text' value={username} name='Username' onChange={({ target }) => setUsername(target.value)}></input>
+      </div>
+      <div>
+    Password <input type='text' value={password} name='Password' onChange={({ target }) => setPassword(target.value)}></input>
+      </div>
+      <button type='submit'>Login</button>
+    </form>
+  )
 
   const blogList = (<div> {blogs.map(blog =>
     <Blog key={blog.id} user={user} blog={blog} handleBlogDelete={handleBlogDelete}/>
   )}</div>)
 
-  
+
   return (
     <div>
       {message? <Notification message={message} type={messageType} /> : null}
