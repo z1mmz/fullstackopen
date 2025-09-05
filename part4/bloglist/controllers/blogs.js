@@ -39,23 +39,28 @@ blogsRouter.post('/',middleware.userExtractor, async(request, response) => {
   response.status(201).json(result)
 })
 
-blogsRouter.put('/:id',middleware.userExtractor, async(request, response) => {
+blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const id = request.params.id
   const blog = await Blog.findById(id).populate('user')
   const user = request.user
+
+  const { title, author, url, likes } = request.body
   if (!user) {
     return response.status(400).json({ error: 'UserId missing or not valid' })
   }
-  if ( blog.user.id === user.id ){
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog not found' })
+  }
+  if (blog.user.id === user.id) {
     const result = await Blog.findByIdAndUpdate(
       id,
-      { $set: request.body },
+      { $set: { title, author, url, likes } },
       { new: true }
     )
     response.status(200).json(result)
-  }else{
+  } else {
     response.status(401).json({
-      error:"unauthorized"
+      error: 'unauthorized'
     })
   }
 })
