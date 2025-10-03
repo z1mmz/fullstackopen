@@ -6,6 +6,7 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/togglable'
 
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
@@ -76,6 +77,24 @@ const App = () => {
         .catch(error => statusMessage(`Error: ${error}`, 'error'))
     }
   }
+
+  const handleBlogLike = async (blog) => {
+    console.log('like', blog)
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    console.log('like', updatedBlog)
+
+    try {
+      const returnedBlog = await blogService.updateBlog(blog.id, updatedBlog)
+      console.log(returnedBlog)
+      setBlogs(blogs =>
+        blogs
+          .map(b => (b.id === blog.id ? updatedBlog : b))
+          .sort((a, b) => b.likes - a.likes)
+      )
+    } catch (error) {
+      statusMessage(`Error: ${error}`, 'error')
+    }
+  }
   //console.log('delete', blog)
 
   const loginForm = (
@@ -91,7 +110,7 @@ const App = () => {
   )
 
   const blogList = (<div> {blogs.map(blog =>
-    <Blog key={blog.id} user={user} blog={blog} handleBlogDelete={handleBlogDelete}/>
+    <Blog key={blog.id} user={user} blog={blog} handleBlogDelete={handleBlogDelete} handleBlogLike={handleBlogLike}/>
   )}</div>)
 
 
