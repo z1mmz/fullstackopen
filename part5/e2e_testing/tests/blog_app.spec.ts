@@ -1,7 +1,7 @@
 
 
 const { describe, test, expect, beforeEach, afterAll } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith,createBlog } = require('./helper')
 
 const username = 'tester'
 const password = 'test1234'
@@ -18,9 +18,6 @@ beforeEach(async ({ page, request }) => {
         await page.goto('/')
     })
 
-afterAll(async ({ request }) => {
-    await request.post('/api/testing/reset')
-})
 describe('Blog app', () => {
 
 
@@ -47,17 +44,19 @@ describe('Blog app', () => {
     })
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
-            await page.goto('/')
             await loginWith(page, username, password)
         })
 
         test('a new blog can be created', async ({ page }) => {
-            await page.getByRole('button', { name: 'Create Blog' }).click()
-            await page.getByLabel('title:').fill('E2E testing')
-            await page.getByLabel('author:').fill('Test Author')
-            await page.getByLabel('url:').fill('https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
-            await page.getByRole('button', { name: 'Post' }).click()
+            await createBlog(page, 'E2E testing','Test Author','https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
             await expect(page.getByText('E2E testing Test Author')).toBeVisible()
+        })
+        test('user can like a blog', async ({ page }) => {
+            await createBlog(page, 'E2E testing','Test Author','https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
+            await page.getByText('view').click()
+            const likeButton = page.getByText('like')
+            await likeButton.click()
+            await expect(page.getByText('likes 1')).toBeVisible()
         })
     })
 })
