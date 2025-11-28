@@ -120,7 +120,7 @@ const App = () => {
       <h2>blogs</h2>
       {user ? <div><b>Logged in user: {user.username}</b> <button onClick={() => handleLogout()}>logout</button></div>: loginForm}
       {user ? <Togglable buttonLabel="Create Blog"><BlogForm handleBlogSubmit={handleBlogSubmit}/></Togglable> : null}
-      {user ? blogList :null }
+      {blogList }
     </div>
   )
 }
