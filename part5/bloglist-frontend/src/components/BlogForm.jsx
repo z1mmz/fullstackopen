@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import blogs from '../services/blogs'
-const BlogForm = ({ handleBlogSubmit }) => {
+const BlogForm = ({ handleBlogSubmit}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [visible, setVisbile] = useState(false)
+  
   const handleSubmit = async (e) => {
     e.preventDefault()
     handleBlogSubmit({ title:title, author:author, url:url })

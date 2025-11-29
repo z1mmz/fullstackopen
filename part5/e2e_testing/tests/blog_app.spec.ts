@@ -77,11 +77,12 @@ describe('Blog app', () => {
             page.on('dialog', async dialog => { await dialog.accept()})
             await createBlog(page, 'Delete testing', 'Test Author', 'https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
             const blog = page.getByText('Delete testing Test Author')
-            await blog.getByRole('button', { name: 'View' }).click()
-            await page.getByRole('button', { name: 'remove' }).click()
+            const blogCard = blog.locator('..')
+            await blogCard.getByRole('button', { name: 'View' }).click()
+            await blogCard.getByRole('button', { name: 'remove' }).click()
             await expect(page.getByText('Delete testing Test Author')).not.toBeVisible()
         })
-        test('blog cant be deleted when not logged in', async ({ page,request}) => {
+        test('blog cant be deleted when not logged in', async ({ page}) => {
             await loginWith(page, username, password)
             page.on('dialog', async dialog => { await dialog.accept()})
             await createBlog(page, 'Delete testing', 'Test Author', 'https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
@@ -91,6 +92,33 @@ describe('Blog app', () => {
             const blog = page.getByText('Delete testing Test Author')
             await blog.getByRole('button', { name: 'View' }).click()
             await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
+        })
+        test('blogs are ordered by likes', async ({ page}) => {
+            await loginWith(page, username, password)
+            page.on('dialog', async dialog => { await dialog.accept()})
+            await createBlog(page, 'Like testing 1', 'Test Author', 'https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
+            await createBlog(page, 'Like testing 2', 'Test Author', 'https://fullstackopen.com/en/part5/end_to_end_testing_playwright')
+            
+            const blog = page.getByText('Like testing 1 Test Author')
+            await blog.getByRole('button', { name: 'View' }).click()
+            const blogCard = blog.locator('..')
+            for (let i = 0; i < 10; i++) {
+                await blogCard.getByRole('button', { name: 'like' }).click()
+                await page.waitForTimeout(200)
+            }
+        
+            const blog2 = page.getByText('Like testing 2 Test Author')
+            await blog2.getByRole('button', { name: 'View' }).click()
+            const blogCard2 = blog2.locator('..')
+            for (let i = 0; i < 5; i++) {
+                await blogCard2.getByRole('button', { name: 'like' }).click() 
+                await page.waitForTimeout(200)
+            }
+
+            const allBlogs = await page.getByTestId('blog')
+            await expect(allBlogs.nth(0)).toContainText('Like testing 1 Test Author')
+
+
         })
     })
 })
