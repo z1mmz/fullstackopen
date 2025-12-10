@@ -1,11 +1,11 @@
-
+import { filterChange } from '../reducers/filterReducer' 
 import { useDispatch } from 'react-redux'
 const AnecdoteFilter = () => {
     const dispatch = useDispatch()
      const Filter = (event) => {
             event.preventDefault()
             console.log(event.target.value)
-            dispatch({ type: 'SET_FILTER', payload: event.target.value })
+            dispatch(filterChange(event.target.value ))
         }
 
     return (
