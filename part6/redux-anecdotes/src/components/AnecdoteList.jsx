@@ -6,7 +6,6 @@ let timer
 const AnecdoteList = () => {
     const dispatch = useDispatch()
     const anecdotes = useSelector(({filter, anecdotes}) => {
-        console.log(anecdotes)
         if(filter === '') {
             return anecdotes.slice().sort((a,b) => b.votes - a.votes)
         }else{
