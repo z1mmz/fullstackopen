@@ -14,7 +14,10 @@ const App = () => {
     queryFn: getAnecdotes,
     retry: false
   })
-   if (result.isLoading) {
+  if (result.isError) {
+    return <div>anecdote service not available due to problems in server</div>
+  }
+  if (result.isLoading) {
     return <div>loading data...</div>
   }
   const anecdotes = result.data
