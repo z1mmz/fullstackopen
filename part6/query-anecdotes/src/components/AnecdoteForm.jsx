@@ -1,13 +1,24 @@
-import {  useMutation, useQueryClient  } from '@tanstack/react-query'
+import { useContext } from 'react'
+import {  useMutation, useQueryClient } from '@tanstack/react-query'
 import { createAnecdote } from '../requests'
+import NotificationContext from '../notificationContext'
 
+let timer
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
+  const { notificationDispatch } = useContext(NotificationContext)
   const newAnecdoteMutation = useMutation({
       mutationFn:createAnecdote,
       onSuccess:(newAnecdote) =>{
         const anecdotes = queryClient.getQueryData(['anecdotes'])
         queryClient.setQueryData(['anecdotes'],anecdotes.concat(newAnecdote))
+      },
+      onError: (error) =>{
+        notificationDispatch({ type: 'SET_NOTIFICATION', payload: `Error: ${error}` })
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          notificationDispatch({ type: 'CLEAR_NOTIFICATION' })
+        }, 5000);
       }
   })
 

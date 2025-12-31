@@ -15,10 +15,12 @@ export const createAnecdote = async (anecdote) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(anecdote)
     })
+    const result = await resp.json()
     if(!resp.ok){
-        throw new Error("Failed to create anecdote")
+    
+        throw new Error(result.error)
     }   
-    return await resp.json()
+    return result
 }
 
 export const updateAnecdote = async (anecdote) => {
