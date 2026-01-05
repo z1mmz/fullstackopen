@@ -62,9 +62,9 @@ const CreateNew = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.props.value,
+      author: author.props.value,
+      info: info.props.value,
       votes: 0
     })
   }
