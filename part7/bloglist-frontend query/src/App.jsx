@@ -6,24 +6,16 @@ import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
 import NotificationContext from "./notificationContext";
-
+import { useBlogs } from "./hooks/useBlogs";
 let timer;
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { notificationDispatch } = useContext(NotificationContext);
-  const getAllBlogs = async () => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  };
+  const { blogs, createBlog } = useBlogs();
 
-  useEffect(() => {
-    getAllBlogs();
-  }, []);
+  const { notificationDispatch } = useContext(NotificationContext);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("blogsLoggedInUser");
@@ -64,13 +56,14 @@ const App = () => {
     setUser(null);
   };
   const handleBlogSubmit = async (e) => {
-    blogService
-      .createBlog(e)
-      .then(() =>
-        statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
-      )
-      .then(() => getAllBlogs())
-      .catch((error) => statusMessage(`Error: ${error}`, "error"));
+    createBlog(e);
+    // blogService
+    //   .createBlog(e)
+    //   .then(() =>
+    //     statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
+    //   )
+    //   .then(() => getAllBlogs())
+    //   .catch((error) => statusMessage(`Error: ${error}`, "error"));
   };
   const handleBlogDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
@@ -166,7 +159,7 @@ const App = () => {
       )}
       {user ? (
         <Togglable buttonLabel="Create Blog">
-          <BlogForm handleBlogSubmit={handleBlogSubmit} />
+          <BlogForm handleBlogSubmit={createBlog} />
         </Togglable>
       ) : null}
       {blogList}

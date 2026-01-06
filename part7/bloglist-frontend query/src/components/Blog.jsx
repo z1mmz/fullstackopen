@@ -2,7 +2,6 @@ import { useState } from "react";
 import blogs from "../services/blogs";
 
 const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
-  console.log(user);
   const [likes, setLikes] = useState(blog.likes);
   const blogStyle = {
     paddingTop: 10,
