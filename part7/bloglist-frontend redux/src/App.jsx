@@ -7,7 +7,12 @@ import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
 import { useDispatch } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
-import { initializeBlogs, createBlog } from "./reducers/blogReducer";
+import {
+  initializeBlogs,
+  createBlog,
+  deleteBlog,
+  likeBlog,
+} from "./reducers/blogReducer";
 import { useSelector } from "react-redux";
 const App = () => {
   const [user, setUser] = useState(null);
@@ -63,37 +68,24 @@ const App = () => {
   };
   const handleBlogDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService
-        .removeBlog(blog.id)
+      dispatch(deleteBlog(blog.id))
         .then(() =>
           statusMessage(
             `Blog ${blog.title} by ${blog.author} deleted`,
             "success"
           )
         )
-        .then(() => {
-          getAllBlogs();
-        })
         .catch((error) => statusMessage(`Error: ${error}`, "error"));
     }
   };
 
   const handleBlogLike = async (blog) => {
     console.log("like", blog);
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    console.log("like", updatedBlog);
-
-    try {
-      const returnedBlog = await blogService.updateBlog(blog.id, updatedBlog);
-      console.log(returnedBlog);
-      setBlogs((blogs) =>
-        blogs
-          .map((b) => (b.id === blog.id ? updatedBlog : b))
-          .sort((a, b) => b.likes - a.likes)
-      );
-    } catch (error) {
-      statusMessage(`Error: ${error}`, "error");
-    }
+    dispatch(likeBlog(blog))
+      .then(() =>
+        statusMessage(`Blog ${blog.title} by ${blog.author} liked`, "success")
+      )
+      .catch((error) => statusMessage(`Error: ${error}`, "error"));
   };
   //console.log('delete', blog)
 

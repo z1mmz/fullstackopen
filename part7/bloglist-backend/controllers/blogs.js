@@ -62,9 +62,12 @@ blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
     );
     response.status(200).json(result);
   } else {
-    response.status(401).json({
-      error: "unauthorized",
-    });
+    const result = await Blog.findByIdAndUpdate(
+      id,
+      { $set: { likes } },
+      { new: true }
+    );
+    response.status(200).json(result);
   }
 });
 
