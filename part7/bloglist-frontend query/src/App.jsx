@@ -55,51 +55,7 @@ const App = () => {
     window.localStorage.removeItem("blogsLoggedInUser");
     setUser(null);
   };
-  const handleBlogSubmit = async (e) => {
-    createBlog(e);
-    // blogService
-    //   .createBlog(e)
-    //   .then(() =>
-    //     statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
-    //   )
-    //   .then(() => getAllBlogs())
-    //   .catch((error) => statusMessage(`Error: ${error}`, "error"));
-  };
-  const handleBlogDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService
-        .removeBlog(blog.id)
-        .then(() =>
-          statusMessage(
-            `Blog ${blog.title} by ${blog.author} deleted`,
-            "success"
-          )
-        )
-        .then(() => {
-          getAllBlogs();
-        })
-        .catch((error) => statusMessage(`Error: ${error}`, "error"));
-    }
-  };
 
-  const handleBlogLike = async (blog) => {
-    console.log("like", blog);
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    console.log("like", updatedBlog);
-
-    try {
-      const returnedBlog = await blogService.updateBlog(blog.id, updatedBlog);
-      console.log(returnedBlog);
-      setBlogs((blogs) =>
-        blogs
-          .map((b) => (b.id === blog.id ? updatedBlog : b))
-          .sort((a, b) => b.likes - a.likes)
-      );
-      statusMessage(`Voted for ${blog.title} by ${blog.author}`, "success");
-    } catch (error) {
-      statusMessage(`Error: ${error}`, "error");
-    }
-  };
   //console.log('delete', blog)
 
   const loginForm = (
@@ -134,13 +90,7 @@ const App = () => {
     <div>
       {" "}
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          user={user}
-          blog={blog}
-          handleBlogDelete={handleBlogDelete}
-          handleBlogLike={handleBlogLike}
-        />
+        <Blog key={blog.id} user={user} blog={blog} />
       ))}
     </div>
   );
@@ -159,7 +109,7 @@ const App = () => {
       )}
       {user ? (
         <Togglable buttonLabel="Create Blog">
-          <BlogForm handleBlogSubmit={createBlog} />
+          <BlogForm />
         </Togglable>
       ) : null}
       {blogList}

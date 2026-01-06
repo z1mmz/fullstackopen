@@ -1,14 +1,14 @@
 import { useState } from "react";
-import blogs from "../services/blogs";
-const BlogForm = ({ handleBlogSubmit }) => {
+import { useBlogs } from "../hooks/useBlogs";
+const BlogForm = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
   const [visible, setVisbile] = useState(false);
-
+  const { createBlog } = useBlogs();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleBlogSubmit({ title: title, author: author, url: url });
+    createBlog({ title: title, author: author, url: url });
     setTitle("");
     setAuthor("");
     setUrl("");

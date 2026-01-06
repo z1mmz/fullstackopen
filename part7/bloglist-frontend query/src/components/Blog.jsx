@@ -1,7 +1,8 @@
 import { useState } from "react";
 import blogs from "../services/blogs";
+import { useBlogs } from "../hooks/useBlogs";
 
-const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
+const Blog = ({ blog, user }) => {
   const [likes, setLikes] = useState(blog.likes);
   const blogStyle = {
     paddingTop: 10,
@@ -10,20 +11,12 @@ const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
-
+  const { deleteBlog, likeBlog } = useBlogs();
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   const toggleVisibility = () => {
     setDetailsVisible(!detailsVisible);
   };
-  // const handleLike = () => {
-  //   blog.likes = likes + 1
-  //   setLikes(blog.likes)
-  //   console.log('like', blog)
-  //   blogs.updateBlog(blog.id, blog).then(() => {
-  //     console.log('updated')
-  //   })
-  // }
 
   const showWhenVisible = { display: detailsVisible ? "" : "none" };
   return (
@@ -38,15 +31,11 @@ const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}{" "}
-          {user ? (
-            <button onClick={() => handleBlogLike(blog)}>like</button>
-          ) : (
-            ""
-          )}
+          {user ? <button onClick={() => likeBlog(blog)}>like</button> : ""}
         </div>
         <div>{blog.user.name}</div>
         {user && user.id == blog.user.id ? (
-          <button onClick={() => handleBlogDelete(blog)}>remove</button>
+          <button onClick={() => deleteBlog(blog.id)}>remove</button>
         ) : (
           ""
         )}
