@@ -28,14 +28,18 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   if (!user) {
     return response.status(400).json({ error: "UserId missing or not valid" });
   }
-
+  console.log("creating blog for user", user);
   const blog = new Blog(request.body);
   blog.user = user.id;
   const result = await blog.save();
   user.blogs = user.blogs.concat(result._id);
   await user.save();
-
-  response.status(201).json(result);
+  const createdBlog = await Blog.findById(result._id).populate("user", {
+    username: 1,
+    name: 1,
+    id: 1,
+  });
+  response.json(createdBlog);
 });
 
 blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
@@ -54,7 +58,7 @@ blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
     const result = await Blog.findByIdAndUpdate(
       id,
       { $set: { title, author, url, likes } },
-      { new: true },
+      { new: true }
     );
     response.status(200).json(result);
   } else {
@@ -84,6 +88,6 @@ blogsRouter.delete(
         error: "unauthorized",
       });
     }
-  },
+  }
 );
 module.exports = blogsRouter;

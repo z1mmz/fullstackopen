@@ -7,24 +7,23 @@ import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
 import { useDispatch } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
+import { initializeBlogs, createBlog } from "./reducers/blogReducer";
+import { useSelector } from "react-redux";
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const blogs = useSelector((state) => {
+    console.log("state blog", state);
+    const sortedBlogs = state.blogs.slice().sort((a, b) => b.likes - a.likes);
+    return sortedBlogs;
+  });
+
   const dispatch = useDispatch();
-  const getAllBlogs = async () => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  };
 
   useEffect(() => {
-    getAllBlogs();
-  }, []);
-
-  useEffect(() => {
+    dispatch(initializeBlogs());
     const loggedUserJSON = window.localStorage.getItem("blogsLoggedInUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
@@ -56,12 +55,10 @@ const App = () => {
     setUser(null);
   };
   const handleBlogSubmit = async (e) => {
-    blogService
-      .createBlog(e)
+    dispatch(createBlog(e))
       .then(() =>
         statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
       )
-      .then(() => getAllBlogs())
       .catch((error) => statusMessage(`Error: ${error}`, "error"));
   };
   const handleBlogDelete = async (blog) => {
