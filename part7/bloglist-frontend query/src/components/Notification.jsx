@@ -1,14 +1,17 @@
-import React from "react";
+import { useContext } from "react";
+import NotificationContext from "../notificationContext";
 
-const Notification = ({ message, type }) => {
-  if (!message) return null;
+const Notification = () => {
+  const { notification } = useContext(NotificationContext);
+  console.log("Notification:", notification);
+  if (!notification) return null;
   const notificationStyle = {
-    color: type === "error" ? "red" : "green",
+    color: notification.type === "error" ? "red" : "green",
   };
 
   return (
     <div style={notificationStyle} className="notification">
-      {message}
+      {notification.message}
     </div>
   );
 };

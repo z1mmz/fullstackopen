@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Blog from "./components/Blog";
 import login from "./services/login";
 import blogService from "./services/blogs";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
+import NotificationContext from "./notificationContext";
 
+let timer;
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState(null);
 
+  const { notificationDispatch } = useContext(NotificationContext);
   const getAllBlogs = async () => {
     blogService
       .getAll()
@@ -34,11 +35,13 @@ const App = () => {
   }, []);
 
   const statusMessage = (message, type) => {
-    setMessageType(type);
-    setMessage(message);
-    setTimeout(() => {
-      setMessageType(null);
-      setMessage(null);
+    console.log("statusMessage", message, type);
+    notificationDispatch({
+      type: "SET_NOTIFICATION",
+      payload: { message, type },
+    });
+    timer = setTimeout(() => {
+      notificationDispatch({ type: "CLEAR_NOTIFICATION" });
     }, 5000);
   };
 
@@ -64,7 +67,7 @@ const App = () => {
     blogService
       .createBlog(e)
       .then(() =>
-        statusMessage(`A new blog ${e.title} by ${e.author} added`, "success"),
+        statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
       )
       .then(() => getAllBlogs())
       .catch((error) => statusMessage(`Error: ${error}`, "error"));
@@ -76,8 +79,8 @@ const App = () => {
         .then(() =>
           statusMessage(
             `Blog ${blog.title} by ${blog.author} deleted`,
-            "success",
-          ),
+            "success"
+          )
         )
         .then(() => {
           getAllBlogs();
@@ -97,8 +100,9 @@ const App = () => {
       setBlogs((blogs) =>
         blogs
           .map((b) => (b.id === blog.id ? updatedBlog : b))
-          .sort((a, b) => b.likes - a.likes),
+          .sort((a, b) => b.likes - a.likes)
       );
+      statusMessage(`Voted for ${blog.title} by ${blog.author}`, "success");
     } catch (error) {
       statusMessage(`Error: ${error}`, "error");
     }
@@ -150,7 +154,7 @@ const App = () => {
 
   return (
     <div>
-      {message ? <Notification message={message} type={messageType} /> : null}
+      <Notification />
       <h2>blogs</h2>
       {user ? (
         <div>

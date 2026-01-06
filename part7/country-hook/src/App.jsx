@@ -1,57 +1,54 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { useCountry } from './hooks'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useCountry } from "./hooks";
 
 const useField = (type) => {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState("");
 
   const onChange = (event) => {
-    setValue(event.target.value)
-  }
+    setValue(event.target.value);
+  };
 
   return {
     type,
     value,
-    onChange
-  }
-}
-
-
-
+    onChange,
+  };
+};
 
 const Country = ({ country }) => {
-  console.log(country)
+  console.log(country);
   if (!country) {
-    return null
+    return null;
   }
 
   if (!country.found) {
-    return (
-      <div>
-        not found...
-      </div>
-    )
+    return <div>not found...</div>;
   }
 
   return (
     <div>
       <h3>{country.data.name.common} </h3>
       <div>capital {country.data.capital} </div>
-      <div>population {country.data.population}</div> 
-      <img src={country.data.flags.svg} height='100' alt={`flag of ${country.data.name}`}/>  
+      <div>population {country.data.population}</div>
+      <img
+        src={country.data.flags.svg}
+        height="100"
+        alt={`flag of ${country.data.name}`}
+      />
     </div>
-  )
-}
+  );
+};
 
 const App = () => {
-  const nameInput = useField('text')
-  const [name, setName] = useState('')
-  const country = useCountry(name)
+  const nameInput = useField("text");
+  const [name, setName] = useState("");
+  const country = useCountry(name);
 
   const fetch = (e) => {
-    e.preventDefault()
-    setName(nameInput.value)
-  }
+    e.preventDefault();
+    setName(nameInput.value);
+  };
 
   return (
     <div>
@@ -62,7 +59,7 @@ const App = () => {
 
       <Country country={country} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
