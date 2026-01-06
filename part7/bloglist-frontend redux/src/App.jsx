@@ -13,12 +13,18 @@ import {
   deleteBlog,
   likeBlog,
 } from "./reducers/blogReducer";
+
+import {
+  loginUser,
+  initializeUserFromStorage,
+  logout,
+} from "./reducers/userReducer";
+
 import { useSelector } from "react-redux";
 const App = () => {
-  const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const user = useSelector((state) => state.user);
   const blogs = useSelector((state) => {
     console.log("state blog", state);
     const sortedBlogs = state.blogs.slice().sort((a, b) => b.likes - a.likes);
@@ -29,12 +35,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs());
-    const loggedUserJSON = window.localStorage.getItem("blogsLoggedInUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
+    dispatch(initializeUserFromStorage());
   }, []);
 
   const statusMessage = (message, type) => {
@@ -44,20 +45,16 @@ const App = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const user = await login.login({ username, password });
-      window.localStorage.setItem("blogsLoggedInUser", JSON.stringify(user));
-      setUser(user);
+      dispatch(loginUser(username, password));
       setUsername("");
       setPassword("");
-      blogService.setToken(user.token);
     } catch (exception) {
       statusMessage("Wrong username or password", "error");
       console.error(exception);
     }
   };
   const handleLogout = async () => {
-    window.localStorage.removeItem("blogsLoggedInUser");
-    setUser(null);
+    dispatch(logout());
   };
   const handleBlogSubmit = async (e) => {
     dispatch(createBlog(e))
@@ -78,7 +75,6 @@ const App = () => {
         .catch((error) => statusMessage(`Error: ${error}`, "error"));
     }
   };
-
   const handleBlogLike = async (blog) => {
     console.log("like", blog);
     dispatch(likeBlog(blog))
