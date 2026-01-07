@@ -4,6 +4,7 @@ import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
 import UserList from "./components/userList";
+import UserView from "./components/UserView";
 import { useDispatch } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
@@ -29,7 +30,7 @@ const App = () => {
   useEffect(() => {
     dispatch(initializeBlogs());
     dispatch(initializeUserFromStorage());
-  }, []);
+  }, [dispatch]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -78,6 +79,10 @@ const App = () => {
     </div>
   );
 
+  const match = useMatch("/users/:id");
+
+  const selectedUserId = match ? match.params.id : null;
+
   return (
     <div>
       <Notification />
@@ -98,6 +103,7 @@ const App = () => {
 
       <Routes>
         <Route path="/users" element={<UserList />} />
+        <Route path="/users/:id" element={<UserView id={selectedUserId} />} />
         <Route path="/" element={<div>{blogList}</div>} />
       </Routes>
     </div>
