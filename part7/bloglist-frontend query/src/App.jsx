@@ -5,29 +5,25 @@ import blogService from "./services/blogs";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
-import NotificationContext from "./notificationContext";
+
 import { useBlogs } from "./hooks/useBlogs";
+import { useLogin } from "./hooks/useLogin";
+
+import UserContext from "./userContext";
+import NotificationContext from "./notificationContext";
+
 let timer;
 const App = () => {
-  const [user, setUser] = useState(null);
+  const { user, userDispatch } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const { blogs, createBlog } = useBlogs();
+  const { login, logout } = useLogin();
 
   const { notificationDispatch } = useContext(NotificationContext);
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("blogsLoggedInUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
   const statusMessage = (message, type) => {
-    console.log("statusMessage", message, type);
     notificationDispatch({
       type: "SET_NOTIFICATION",
       payload: { message, type },
@@ -40,20 +36,13 @@ const App = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const user = await login.login({ username, password });
-      window.localStorage.setItem("blogsLoggedInUser", JSON.stringify(user));
-      setUser(user);
+      login({ username, password });
       setUsername("");
       setPassword("");
-      blogService.setToken(user.token);
     } catch (exception) {
       statusMessage("Wrong username or password", "error");
       console.error(exception);
     }
-  };
-  const handleLogout = async () => {
-    window.localStorage.removeItem("blogsLoggedInUser");
-    setUser(null);
   };
 
   //console.log('delete', blog)
@@ -102,7 +91,7 @@ const App = () => {
       {user ? (
         <div>
           <b>Logged in user: {user.username}</b>{" "}
-          <button onClick={() => handleLogout()}>logout</button>
+          <button onClick={() => logout()}>logout</button>
         </div>
       ) : (
         loginForm
