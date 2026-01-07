@@ -1,7 +1,10 @@
 import { useState } from "react";
 import blogs from "../services/blogs";
+import { useDispatch } from "react-redux";
+import { deleteBlog, likeBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch();
   console.log(user);
   const [likes, setLikes] = useState(blog.likes);
   const blogStyle = {
@@ -17,14 +20,12 @@ const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
   const toggleVisibility = () => {
     setDetailsVisible(!detailsVisible);
   };
-  // const handleLike = () => {
-  //   blog.likes = likes + 1
-  //   setLikes(blog.likes)
-  //   console.log('like', blog)
-  //   blogs.updateBlog(blog.id, blog).then(() => {
-  //     console.log('updated')
-  //   })
-  // }
+
+  const handleBlogDelete = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      dispatch(deleteBlog(blog));
+    }
+  };
 
   const showWhenVisible = { display: detailsVisible ? "" : "none" };
   return (
@@ -40,14 +41,14 @@ const Blog = ({ blog, user, handleBlogDelete, handleBlogLike }) => {
         <div>
           likes {blog.likes}{" "}
           {user ? (
-            <button onClick={() => handleBlogLike(blog)}>like</button>
+            <button onClick={() => dispatch(likeBlog(blog))}>like</button>
           ) : (
             ""
           )}
         </div>
         <div>{blog.user.name}</div>
         {user && user.id == blog.user.id ? (
-          <button onClick={() => handleBlogDelete(blog)}>remove</button>
+          <button onClick={() => handleBlogDelete()}>remove</button>
         ) : (
           ""
         )}

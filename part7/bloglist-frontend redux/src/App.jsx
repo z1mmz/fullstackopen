@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
-import login from "./services/login";
-import blogService from "./services/blogs";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
@@ -38,52 +36,15 @@ const App = () => {
     dispatch(initializeUserFromStorage());
   }, []);
 
-  const statusMessage = (message, type) => {
-    dispatch(setNotification(message, type, 10));
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      dispatch(loginUser(username, password));
-      setUsername("");
-      setPassword("");
-    } catch (exception) {
-      statusMessage("Wrong username or password", "error");
-      console.error(exception);
-    }
+    dispatch(loginUser(username, password));
+    setUsername("");
+    setPassword("");
   };
   const handleLogout = async () => {
     dispatch(logout());
   };
-  const handleBlogSubmit = async (e) => {
-    dispatch(createBlog(e))
-      .then(() =>
-        statusMessage(`A new blog ${e.title} by ${e.author} added`, "success")
-      )
-      .catch((error) => statusMessage(`Error: ${error}`, "error"));
-  };
-  const handleBlogDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog.id))
-        .then(() =>
-          statusMessage(
-            `Blog ${blog.title} by ${blog.author} deleted`,
-            "success"
-          )
-        )
-        .catch((error) => statusMessage(`Error: ${error}`, "error"));
-    }
-  };
-  const handleBlogLike = async (blog) => {
-    console.log("like", blog);
-    dispatch(likeBlog(blog))
-      .then(() =>
-        statusMessage(`Blog ${blog.title} by ${blog.author} liked`, "success")
-      )
-      .catch((error) => statusMessage(`Error: ${error}`, "error"));
-  };
-  //console.log('delete', blog)
 
   const loginForm = (
     <form onSubmit={handleLogin}>
@@ -117,13 +78,7 @@ const App = () => {
     <div>
       {" "}
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          user={user}
-          blog={blog}
-          handleBlogDelete={handleBlogDelete}
-          handleBlogLike={handleBlogLike}
-        />
+        <Blog key={blog.id} user={user} blog={blog} />
       ))}
     </div>
   );
@@ -142,7 +97,7 @@ const App = () => {
       )}
       {user ? (
         <Togglable buttonLabel="Create Blog">
-          <BlogForm handleBlogSubmit={handleBlogSubmit} />
+          <BlogForm />
         </Togglable>
       ) : null}
       {blogList}
