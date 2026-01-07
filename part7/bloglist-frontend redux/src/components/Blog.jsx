@@ -3,11 +3,13 @@ import blogs from "../services/blogs";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { deleteBlog, likeBlog } from "../reducers/blogReducer";
-
-const Blog = ({ blog }) => {
+import { useNavigate } from "react-router-dom";
+const Blog = ({ id }) => {
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
-  const [likes, setLikes] = useState(blog.likes);
+  const blogs = useSelector((state) => state.blogs);
+  const blog = blogs.find((b) => b.id === id);
+  const navigate = useNavigate();
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -16,28 +18,19 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   };
 
-  const [detailsVisible, setDetailsVisible] = useState(false);
-
-  const toggleVisibility = () => {
-    setDetailsVisible(!detailsVisible);
-  };
-
   const handleBlogDelete = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       dispatch(deleteBlog(blog));
+      navigate("/");
     }
   };
 
-  const showWhenVisible = { display: detailsVisible ? "" : "none" };
   return (
     <div data-testid={"blog"} style={blogStyle}>
       <div>
         {blog.title} {blog.author}{" "}
-        <button onClick={() => toggleVisibility()}>
-          {!detailsVisible ? "view" : "close"}
-        </button>
       </div>
-      <div style={showWhenVisible}>
+      <div>
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}{" "}

@@ -5,9 +5,10 @@ import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
 import UserList from "./components/userList";
 import UserView from "./components/UserView";
+import BlogList from "./components/blogList";
 import { useDispatch } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
-import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
+import { Routes, Route, Link, useMatch } from "react-router-dom";
 import {
   loginUser,
   initializeUserFromStorage,
@@ -70,18 +71,11 @@ const App = () => {
     </form>
   );
 
-  const blogList = (
-    <div>
-      {" "}
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
-  );
+  const userMatch = useMatch("/users/:id");
+  const selectedUserId = userMatch ? userMatch.params.id : null;
 
-  const match = useMatch("/users/:id");
-
-  const selectedUserId = match ? match.params.id : null;
+  const blogMatch = useMatch("/blogs/:id");
+  const selectedBlogId = blogMatch ? blogMatch.params.id : null;
 
   return (
     <div>
@@ -104,7 +98,8 @@ const App = () => {
       <Routes>
         <Route path="/users" element={<UserList />} />
         <Route path="/users/:id" element={<UserView id={selectedUserId} />} />
-        <Route path="/" element={<div>{blogList}</div>} />
+        <Route path="/blogs/:id" element={<Blog id={selectedBlogId} />} />
+        <Route path="/" element={<BlogList />} />
       </Routes>
     </div>
   );
