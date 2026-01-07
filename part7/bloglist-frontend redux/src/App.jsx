@@ -3,15 +3,10 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/togglable";
+import UserList from "./components/userList";
 import { useDispatch } from "react-redux";
-import { setNotification } from "./reducers/notificationReducer";
-import {
-  initializeBlogs,
-  createBlog,
-  deleteBlog,
-  likeBlog,
-} from "./reducers/blogReducer";
-
+import { initializeBlogs } from "./reducers/blogReducer";
+import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
 import {
   loginUser,
   initializeUserFromStorage,
@@ -23,10 +18,10 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const user = useSelector((state) => state.user);
-  const blogs = useSelector((state) => {
-    console.log("state blog", state);
-    const sortedBlogs = state.blogs.slice().sort((a, b) => b.likes - a.likes);
-    return sortedBlogs;
+  const blogs = useSelector(({ blogs }) => {
+    return [...blogs].sort((a, b) => {
+      return b.likes - a.likes;
+    });
   });
 
   const dispatch = useDispatch();
@@ -78,7 +73,7 @@ const App = () => {
     <div>
       {" "}
       {blogs.map((blog) => (
-        <Blog key={blog.id} user={user} blog={blog} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   );
@@ -100,7 +95,11 @@ const App = () => {
           <BlogForm />
         </Togglable>
       ) : null}
-      {blogList}
+
+      <Routes>
+        <Route path="/users" element={<UserList />} />
+        <Route path="/" element={<div>{blogList}</div>} />
+      </Routes>
     </div>
   );
 };
