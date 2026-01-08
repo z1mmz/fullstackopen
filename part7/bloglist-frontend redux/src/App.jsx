@@ -6,6 +6,9 @@ import Togglable from "./components/togglable";
 import UserList from "./components/userList";
 import UserView from "./components/UserView";
 import BlogList from "./components/blogList";
+
+import { Nav, Navbar, Stack } from "react-bootstrap";
+
 import { useDispatch } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import { Routes, Route, Link, useMatch } from "react-router-dom";
@@ -24,20 +27,31 @@ const Menu = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   return (
-    <div>
-      <Link to="/" style={padding}>
-        Blogs
-      </Link>
-      <Link to="/users" style={padding}>
-        Users
-      </Link>
-      {user ? (
-        <span style={padding}>
-          <b>Logged in user: {user.username}</b>{" "}
-          <button onClick={() => dispatch(logout())}>logout</button>
-        </span>
-      ) : null}
-    </div>
+    <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
+      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+      <Navbar.Collapse id="responsive-navbar-nav">
+        <Nav className="me-auto">
+          <Nav.Link href="#" as="span">
+            <Link to="/" style={padding}>
+              Blogs
+            </Link>
+          </Nav.Link>
+          <Nav.Link href="#" as="span">
+            <Link to="/users" style={padding}>
+              Users
+            </Link>
+          </Nav.Link>
+          <Nav.Link href="#" as="span">
+            {user ? (
+              <span style={padding}>
+                <b>Logged in user: {user.username}</b>{" "}
+                <button onClick={() => dispatch(logout())}>logout</button>
+              </span>
+            ) : null}
+          </Nav.Link>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 
@@ -95,23 +109,27 @@ const App = () => {
   const selectedBlogId = blogMatch ? blogMatch.params.id : null;
 
   return (
-    <div>
+    <div className="container">
       <Menu />
-      <Notification />
-      <h2>blogs</h2>
-      {!user ? loginForm : null}
-      {user ? (
-        <Togglable buttonLabel="Create Blog">
-          <BlogForm />
-        </Togglable>
-      ) : null}
 
-      <Routes>
-        <Route path="/users" element={<UserList />} />
-        <Route path="/users/:id" element={<UserView id={selectedUserId} />} />
-        <Route path="/blogs/:id" element={<Blog id={selectedBlogId} />} />
-        <Route path="/" element={<BlogList />} />
-      </Routes>
+      <Notification />
+
+      <Stack gap={3}>
+        <h2>Blogs</h2>
+        {!user ? loginForm : null}
+        {user ? (
+          <Togglable buttonLabel="Create Blog">
+            <BlogForm />
+          </Togglable>
+        ) : null}
+
+        <Routes>
+          <Route path="/users" element={<UserList />} />
+          <Route path="/users/:id" element={<UserView id={selectedUserId} />} />
+          <Route path="/blogs/:id" element={<Blog id={selectedBlogId} />} />
+          <Route path="/" element={<BlogList />} />
+        </Routes>
+      </Stack>
     </div>
   );
 };

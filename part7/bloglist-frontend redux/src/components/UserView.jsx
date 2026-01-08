@@ -2,6 +2,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { initializeUsers } from "../reducers/usersReducer";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Table, Col } from "react-bootstrap";
 
 const UserView = ({ id }) => {
   const dispatch = useDispatch();
@@ -19,13 +21,18 @@ const UserView = ({ id }) => {
   const blogList = (
     <div>
       {user.blogs.map((blog) => (
-        <li key={blog.id}>{blog.title}</li>
+        <div>
+          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+            {blog.title}
+          </Link>
+        </div>
       ))}
     </div>
   );
   return (
     <div>
-      <h2>{user.username}</h2>
+      <Col xs={5}></Col>
+      <h2>Username: {user.username}</h2>
       <h3>Added Blogs</h3>
       <ul>{blogList}</ul>
     </div>
