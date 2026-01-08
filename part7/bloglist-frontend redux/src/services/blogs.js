@@ -26,6 +26,10 @@ const updateBlog = async (id, newObject) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject, config);
   return request.then((response) => response.data);
 };
+const commentBlog = async (id, comment) => {
+  const request = axios.post(`${baseUrl}/${id}/comments`, comment);
+  return request.then((response) => response.data);
+};
 const removeBlog = async (id) => {
   console.log("deleteing", id);
   const config = {
@@ -34,4 +38,11 @@ const removeBlog = async (id) => {
   const request = axios.delete(`${baseUrl}/${id}`, config);
   return request.then((response) => response.data);
 };
-export default { getAll, createBlog, updateBlog, removeBlog, setToken };
+export default {
+  getAll,
+  createBlog,
+  updateBlog,
+  removeBlog,
+  setToken,
+  commentBlog,
+};

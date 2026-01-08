@@ -2,10 +2,16 @@ import { useState, useEffect } from "react";
 import blogs from "../services/blogs";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { deleteBlog, likeBlog, initializeBlogs } from "../reducers/blogReducer";
+import {
+  deleteBlog,
+  likeBlog,
+  initializeBlogs,
+  commentOnBlog,
+} from "../reducers/blogReducer";
 import { useNavigate } from "react-router-dom";
 const Blog = ({ id }) => {
   const dispatch = useDispatch();
+  const [comment, setComment] = useState("");
   const user = useSelector(({ user }) => user);
   const blogs = useSelector((state) => state.blogs);
   const blog = blogs.find((b) => b.id === id);
@@ -28,6 +34,12 @@ const Blog = ({ id }) => {
       navigate("/");
     }
   };
+
+  const handlePostComment = () => {
+    dispatch(commentOnBlog(blog, { body: comment }));
+    setComment("");
+  };
+
   if (!blog) {
     return <div>Blog not found</div>;
   }
@@ -37,6 +49,20 @@ const Blog = ({ id }) => {
       {blog.comments.map((comment) => (
         <li key={comment._id}>{comment.body}</li>
       ))}
+    </div>
+  );
+
+  const commentForm = (
+    <div>
+      <label>
+        <input
+          type="text"
+          placeholder="Add a comment"
+          value={comment}
+          onChange={({ target }) => setComment(target.value)}
+        />
+      </label>
+      <button onClick={() => handlePostComment()}>Add Comment</button>
     </div>
   );
 
@@ -63,6 +89,7 @@ const Blog = ({ id }) => {
         )}
       </div>
       <h2>Comments</h2>
+      {commentForm}
       {commentsList}
     </div>
   );

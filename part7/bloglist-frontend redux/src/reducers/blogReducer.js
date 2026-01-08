@@ -53,6 +53,20 @@ export const createBlog = (blog) => {
   };
 };
 
+export const commentOnBlog = (blog, comment) => {
+  return async (dispatch) => {
+    try {
+      const resp = await blogService.commentBlog(blog.id, comment);
+      const updatedBlog = { ...blog, comments: resp.comments };
+      dispatch(updateBlog(updatedBlog));
+      dispatch(
+        setNotification(`Comment posted to ${blog.title}`, "success", 5)
+      );
+    } catch (error) {
+      dispatch(setNotification(`Could not post comment: ${error}`, "error", 5));
+    }
+  };
+};
 export const deleteBlog = (blog) => {
   return async (dispatch) => {
     try {
