@@ -71,6 +71,27 @@ blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
   }
 });
 
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const id = request.params.id;
+  const blog = await Blog.findById(id).populate("user");
+
+  const { body } = request.body;
+
+  if (!body) {
+    return response.status(400).json({ error: "Invalid request" });
+  }
+  if (!blog) {
+    return response.status(404).json({ error: "Blog not found" });
+  }
+
+  const result = await Blog.findByIdAndUpdate(
+    id,
+    { $set: { comments: [...blog.comments, { body }] } },
+    { new: true }
+  );
+  response.status(200).json(result);
+});
+
 blogsRouter.delete(
   "/:id",
   middleware.userExtractor,

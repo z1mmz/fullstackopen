@@ -16,15 +16,35 @@ import {
 } from "./reducers/userReducer";
 
 import { useSelector } from "react-redux";
+
+const Menu = () => {
+  const padding = {
+    paddingRight: 5,
+  };
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  return (
+    <div>
+      <Link to="/" style={padding}>
+        Blogs
+      </Link>
+      <Link to="/users" style={padding}>
+        Users
+      </Link>
+      {user ? (
+        <span style={padding}>
+          <b>Logged in user: {user.username}</b>{" "}
+          <button onClick={() => dispatch(logout())}>logout</button>
+        </span>
+      ) : null}
+    </div>
+  );
+};
+
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const user = useSelector((state) => state.user);
-  const blogs = useSelector(({ blogs }) => {
-    return [...blogs].sort((a, b) => {
-      return b.likes - a.likes;
-    });
-  });
 
   const dispatch = useDispatch();
 
@@ -38,9 +58,6 @@ const App = () => {
     dispatch(loginUser(username, password));
     setUsername("");
     setPassword("");
-  };
-  const handleLogout = async () => {
-    dispatch(logout());
   };
 
   const loginForm = (
@@ -79,16 +96,10 @@ const App = () => {
 
   return (
     <div>
+      <Menu />
       <Notification />
       <h2>blogs</h2>
-      {user ? (
-        <div>
-          <b>Logged in user: {user.username}</b>{" "}
-          <button onClick={() => handleLogout()}>logout</button>
-        </div>
-      ) : (
-        loginForm
-      )}
+      {!user ? loginForm : null}
       {user ? (
         <Togglable buttonLabel="Create Blog">
           <BlogForm />

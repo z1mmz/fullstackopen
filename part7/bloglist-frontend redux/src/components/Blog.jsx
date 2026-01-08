@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import blogs from "../services/blogs";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { deleteBlog, likeBlog } from "../reducers/blogReducer";
+import { deleteBlog, likeBlog, initializeBlogs } from "../reducers/blogReducer";
 import { useNavigate } from "react-router-dom";
 const Blog = ({ id }) => {
   const dispatch = useDispatch();
@@ -18,12 +18,27 @@ const Blog = ({ id }) => {
     marginBottom: 5,
   };
 
+  useEffect(() => {
+    dispatch(initializeBlogs());
+  }, [dispatch]);
+
   const handleBlogDelete = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       dispatch(deleteBlog(blog));
       navigate("/");
     }
   };
+  if (!blog) {
+    return <div>Blog not found</div>;
+  }
+
+  const commentsList = (
+    <div>
+      {blog.comments.map((comment) => (
+        <li key={comment._id}>{comment.body}</li>
+      ))}
+    </div>
+  );
 
   return (
     <div data-testid={"blog"} style={blogStyle}>
@@ -47,6 +62,8 @@ const Blog = ({ id }) => {
           ""
         )}
       </div>
+      <h2>Comments</h2>
+      {commentsList}
     </div>
   );
 };
