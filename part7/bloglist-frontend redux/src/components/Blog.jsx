@@ -27,11 +27,11 @@ const Blog = ({ id }) => {
 
   return (
     <div data-testid={"blog"} style={blogStyle}>
-      <div>
+      <h2>
         {blog.title} {blog.author}{" "}
-      </div>
+      </h2>
       <div>
-        <div>{blog.url}</div>
+        <a href={blog.url}>{blog.url}</a>
         <div>
           likes {blog.likes}{" "}
           {user ? (
@@ -40,7 +40,7 @@ const Blog = ({ id }) => {
             ""
           )}
         </div>
-        <div>{blog.user.name}</div>
+        <div>Added by {blog.user.name}</div>
         {user && user.id == blog.user.id ? (
           <button onClick={() => handleBlogDelete()}>remove</button>
         ) : (
